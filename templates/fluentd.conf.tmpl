@@ -1,0 +1,34 @@
+## File input
+## read docker logs with tag=docker.container
+
+{{range $key, $value := .}}
+<source>
+  type tail
+  format json
+  time_key time
+  time_format %Y-%m-%dT%T.%LZ
+  path /var/lib/docker/containers/{{ $value.ID }}/{{ $value.ID }}-json.log
+  pos_file /var/lib/docker/containers/{{ $value.ID }}/{{ $value.ID }}-json.log.pos
+  tag docker.container.{{printf "%.*s" 12 $value.ID}}
+  rotate_wait 5
+</source>
+{{end}}
+
+### wide matches won't stack up, so if you enable this, you'll lose elasticsearch output
+#<match docker.**>
+#  type stdout
+#</match>
+
+<match docker.**>
+  type elasticsearch
+  host es1
+  port 9200
+  index_name fluentd
+  type_name fluentd
+  logstash_format true
+  buffer_type memory
+  flush_interval 3
+  retry_limit 17
+  retry_wait 1.0
+  num_threads 1
+</match>
