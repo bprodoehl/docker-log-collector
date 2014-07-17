@@ -9,7 +9,8 @@
   time_format %Y-%m-%dT%T.%LZ
   path /var/lib/docker/containers/{{ $value.ID }}/{{ $value.ID }}-json.log
   pos_file /var/lib/docker/containers/{{ $value.ID }}/{{ $value.ID }}-json.log.pos
-  tag docker.container.{{printf "%.*s" 12 $value.ID}}
+  tag docker.container.{{ $value.Name }}
+#  tag docker.container.{{printf "%.*s" 12 $value.ID}}
   rotate_wait 5
 </source>
 {{end}}
@@ -19,12 +20,13 @@
 #  type stdout
 #</match>
 
-<match docker.**>
+{{range $key, $value := .}}
+<match docker.container.{{ $value.Name }}>
   type elasticsearch
   host es1
   port 9200
   index_name fluentd
-  type_name fluentd
+  type_name {{ $value.Name }}
   logstash_format true
   buffer_type memory
   flush_interval 3
@@ -32,3 +34,4 @@
   retry_wait 1.0
   num_threads 1
 </match>
+{{end}}
