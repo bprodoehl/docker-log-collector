@@ -12,6 +12,7 @@
   tag docker.container.{{ $value.Name }}
 #  tag docker.container.{{printf "%.*s" 12 $value.ID}}
   rotate_wait 5
+  read_from_head true
 </source>
 {{end}}
 
