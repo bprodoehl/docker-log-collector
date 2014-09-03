@@ -24,9 +24,9 @@ Watch the logs from all your local containers with Kibana
 
 You can easily watch and analyze the logs from all of your containers by combining this container with Kibana.  As you can see in the screenshot below, each line of output from each locally-running container will show up in Kibana, with the ```_type``` field set to the container name and the ```log``` field containing the message.
 
-![Kibana screenshot](kibana-screenshot.png)
+![Kibana screenshot](doc/kibana-screenshot.png)
 
-This sample script will launch the containers necessary to watch the logs from all of your locally-running Docker containers, and will open Kibana in your default browser.
+This sample script will launch the containers necessary to watch the logs from all of your locally-running Docker containers, and will open Kibana in your default browser.  The script, and an accompanying script to tear everything down, is also in the ```doc``` folder.
 
 ```bash
 #!/bin/bash
@@ -38,13 +38,27 @@ docker pull bprodoehl/log-collector
 
 ### Launch them
 # Launch ElasticSearch
-docker run -itd --name elasticsearch --hostname elasticsearch balsamiq/docker-elasticsearch
+docker run -d \
+           --name elasticsearch \
+           --hostname elasticsearch \
+           balsamiq/docker-elasticsearch
 
 # Launch Kibana
-docker run -itd -e KIBANA_SECURE=false --link elasticsearch:es --name kibana --hostname kibana bprodoehl/kibana
+docker run -d \
+           -e KIBANA_SECURE=false \
+           --link elasticsearch:es \
+           --name kibana \
+           --hostname kibana \
+           bprodoehl/kibana
 
 # Launch the log collector
-docker run -itd -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/containers:/var/lib/docker/containers --link elasticsearch:es1 --name collector --hostname collector bprodoehl/log-collector
+docker run -d \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /var/lib/docker/containers:/var/lib/docker/containers \
+           --link elasticsearch:es1 \
+           --name collector \
+           --hostname collector \
+           bprodoehl/log-collector
 
 ### Open up Kibana in your default browser
 OPEN_CMD=open
