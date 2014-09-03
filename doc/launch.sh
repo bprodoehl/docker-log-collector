@@ -41,8 +41,11 @@ do
 done  
 
 echo Giving things a few seconds to spin up...
-sleep 5
+sleep 10
 
 echo Opening Kibana in default browser
 KIBANA_IP=`docker inspect --format '{{ .NetworkSettings.IPAddress }}' kibana`
 $OPEN_CMD "http://$KIBANA_IP/index.html#/dashboard/file/logstash.json"
+
+sleep 3
+echo All done!
